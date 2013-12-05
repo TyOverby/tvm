@@ -1,0 +1,54 @@
+import std.algorithm;
+import std.string;
+import std.array;
+
+
+import os;
+import machinecode;
+
+struct Intermediate {
+  string packageName;
+  size_t[string] exports;
+  size_t[] [string] imports;
+
+  uint[] code;
+}
+
+private Mem mconvert(uint m) {
+  Mem mem;
+  mem.value.uinteger = m;
+  return mem;
+}
+
+CodeUnit decode(string s) {
+  import vibe.data.json;
+
+  Json parsed = parseJsonString(s);
+
+  Intermediate inter = deserializeJson!Intermediate(parsed);
+
+  size_t[Reference] imports;
+  foreach(k, v; inter.imports) {
+    auto split = k.split(".");
+    Reference refer = Reference(split[0], split[1]);
+    imports[refer] = v;
+  }
+
+  auto mem = map!(a => mconvert(a))(inter.code);
+
+  return CodeUnit(inter.packageName, inter.exports, imports, mem.array);
+}
+
+string encode(CodeUnit c) {
+  import vibe.data.json;
+
+  size_t[string] imports;
+  foreach(k, v; c.imports) {
+    imports[k.pack ~ "." ~k.name] = v;
+  }
+  auto mem = map!(a => a.value.uinteger)(c.code);
+  Intermediate inter = Intermediate(c.packageName, c.exports, imports, mem.array);
+
+  auto ser = serializeToJson(inter);
+  return ser.toPrettyString(1);
+}

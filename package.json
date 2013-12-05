@@ -1,0 +1,33 @@
+{
+	"name": "tvm",
+	"description": "A simple virtual machine",
+	"homepage": "http://tyoverby.com",
+	"copyright": "Copyright © 2013, Ty Overby",
+  "versions": ["VibeCustomMain"],
+  "configurations": [
+    {
+      "name": "assembler",
+      "targetType": "executable",
+      "targetName": "assembler",
+      "versions": ["Assembler"]
+    },
+    {
+      "name": "vm",
+      "targetType": "executable",
+      "targetName": "vm",
+      "versions": ["VM"]
+    },
+    {
+      "name": "test",
+      "targetType": "executable",
+      "targetName": "test",
+      "versions": ["test"]
+    }
+  ],
+	"authors": [
+		"Ty Overby"
+	],
+	"dependencies": {
+    "cerealed": "~master"
+	}
+}
