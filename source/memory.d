@@ -6,6 +6,10 @@ import std.conv;
 import machinecode;
 import machine;
 
+/**
+ * Instead of having a large chunk of memory for the machine, divide it up into blocks that 
+ * are only allocated as needed.
+ */
 class Memory {
   enum size_t BUCKET_COUNT = 512;
   enum size_t ELE_PER_BUCKET = 128;
