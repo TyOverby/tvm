@@ -11,6 +11,9 @@ enum SystemCall: uint {
   HALT
 }
 
+/**
+ * A class for a single machine.  This is the layer that emulates hardware.
+ */
 class Machine {
   Value[] registers;
   Memory  memory;
@@ -26,6 +29,9 @@ class Machine {
     memory = new Memory;
   }
 
+  /**
+   * Gets the value out of an argument.
+   */
   Value getValue(Argument arg) {
     switch (arg) {
       case Argument.REGISTER: .. case (Argument.REGISTER_DEREF - 1) :
@@ -59,6 +65,12 @@ class Machine {
     }
   }
 
+  /**
+   * Sets a value into an argument slot.
+   * arg: The location to place the value.
+   * val: The value to be stored.
+   * op: The operation to performed on the values.
+   */
   void setValue(Argument arg, Value val, Mem function(Value v1, Value v2) op) {
     switch (arg) {
       case Argument.REGISTER: .. case (Argument.REGISTER_DEREF - 1):
@@ -105,6 +117,15 @@ class Machine {
     }
   }
 
+  /**
+   * A compile time function used for mixing in to the source.
+   * ex: 
+   * genop("+", "uinteger") => function(Value v1, Value v2) {
+   *   Mem mem;
+   *   mem.value.uinteger = (v1.uinteger + v2.uinteger);
+   *   return mem;
+   * }
+   */
   static string genop(string operator, string type) {
     return "function(Value v1, Value v2) {" ~
       "Mem mem;" ~
@@ -113,6 +134,10 @@ class Machine {
       "return mem;}";
   }
 
+  /**
+   * Steps the machine by one operation.  
+   * The logic in this function decodes the opcode.
+   */
   void step() {
     Operation op = memory[programcounter.uinteger++].op;
     Value vb = getValue(op.b);
@@ -255,7 +280,9 @@ class Machine {
     }
   }
 
-
+  /**
+   * Loads a program into memory.
+   */
   void load(Mem[] program) {
     memory[0 .. program.length] = program;
   }
